@@ -26,4 +26,16 @@ export class TodoService {
     updateTodo(todo: UpdateTodoDto) {
         return this.todoRepository.save(todo);
     }
+
+    deleteTodoById(id: number) {
+        return this.todoRepository.delete(id);
+    }
+
+    softDeleteTodoById(id: number) {
+        return this.todoRepository.softDelete(id);
+    }
+
+    restoreTodoById(id: number) {
+        return this.todoRepository.restore(id);
+    }
 }
