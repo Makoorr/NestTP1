@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class TodoDto {
+export class AddTodoDto {
     @IsString()
     @IsNotEmpty()
     @MinLength(3, {
