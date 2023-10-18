@@ -19,7 +19,9 @@ export class TodoEntity {
     })
     status: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        update: false,
+    })
     createdAt: Date;
 
     @UpdateDateColumn()
