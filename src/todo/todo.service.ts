@@ -4,6 +4,7 @@ import { TodoEntity } from './entities/todo.entity/todo.entity';
 import { Repository } from 'typeorm';
 import { AddTodoDto } from './dto/addtodo.dto';
 import { UpdateTodoDto } from './dto/updatetodo.dto';
+import { TodoStatusEnum } from 'src/enums/todo-status.enum';
 
 @Injectable()
 export class TodoService {
@@ -22,6 +23,10 @@ export class TodoService {
         if (todo)
             return todo;
         throw new NotFoundException(`Le todo d'id ${id} n'existe pas`);
+    }
+
+    async getCountByStatus(stat: TodoStatusEnum): Promise<number>{
+        return await this.todoRepository.count({where: {status: stat}});
     }
 
     addTodo(todo: AddTodoDto): Promise<TodoEntity> {
