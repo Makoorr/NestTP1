@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodoEntity } from './entities/todo.entity/todo.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { AddTodoDto } from './dto/addtodo.dto';
 import { UpdateTodoDto } from './dto/updatetodo.dto';
 import { TodoStatusEnum } from 'src/enums/todo-status.enum';
@@ -19,10 +19,19 @@ export class TodoService {
 
     async getTodoById(id: number): Promise<TodoEntity> {
         const todo = await this.todoRepository.findOne({where: {id: id}});
-        console.log(id);
         if (!todo)
             throw new NotFoundException(`Le todo d'id ${id} n'existe pas`);
         return todo;
+    }
+
+    getTodoBy(param1: string, status: TodoStatusEnum) {
+        const res = this.todoRepository
+            .createQueryBuilder('todo')
+            .where('todo.name LIKE :param1', {param1: `%${param1}%`})
+            .orWhere('todo.description LIKE :param1', {param1: `%${param1}%`})
+            .andWhere('todo.status LIKE :status', {status: `%${status}%`})
+            .getMany();
+        return res;
     }
 
     async getCountByStatus(stat: TodoStatusEnum): Promise<number>{

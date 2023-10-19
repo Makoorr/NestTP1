@@ -17,7 +17,7 @@ export class TodoController {
     }
 
     @Get('/:id')
-    getTodosById(
+    getTodoById(
         @Param() params
     ) {
         return this.todoService.getTodoById(params.id);
@@ -29,6 +29,15 @@ export class TodoController {
     ){
         const status: TodoStatusEnum = params.status;
         return this.todoService.getCountByStatus(status);  
+    }
+
+    @Get('/:param1/:status')
+    getTodoBy(
+        @Param() params
+    ){
+        const param1 = params.param1;
+        const status: TodoStatusEnum = params.status;
+        return this.todoService.getTodoBy(param1, status);
     }
 
     @Post('/')
