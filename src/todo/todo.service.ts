@@ -13,8 +13,17 @@ export class TodoService {
         private readonly todoRepository: Repository<TodoEntity>,
     ) {}
 
-    getTodos() {
-        return this.todoRepository.find();
+    async getTodos(take?: number, skip?: number) {
+        if (!take || !skip)
+            return this.todoRepository.find();
+        
+        const todos: TodoEntity[] = await this.todoRepository
+            .createQueryBuilder("todo")
+            .take(take)
+            .skip(skip)
+            .getMany();
+
+        return todos;
     }
 
     async getTodoById(id: number): Promise<TodoEntity> {

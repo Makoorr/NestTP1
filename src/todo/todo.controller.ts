@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { AddTodoDto } from './dto/addtodo.dto';
 import { TodoEntity } from './entities/todo.entity/todo.entity';
@@ -12,8 +12,14 @@ export class TodoController {
     ) {}
 
     @Get('/')
-    getTodos() {
-        return this.todoService.getTodos();
+    getTodos(
+        @Query('take') take,
+        @Query('skip') skip,
+    ) {
+        if (!take || !skip)
+            return this.todoService.getTodos();
+        
+        return this.todoService.getTodos(take, skip);
     }
 
     @Get('/:id')
@@ -22,6 +28,15 @@ export class TodoController {
     ) {
         return this.todoService.getTodoById(params.id);
     }
+  
+    @Get('/:param1/:status')
+    getTodoBy(
+        @Param() params
+        ){
+            const param1 = params.param1;
+            const status: TodoStatusEnum = params.status;
+            return this.todoService.getTodoBy(param1, status);
+        }
 
     @Get('/status/:status')
     getCountByStatus(
@@ -30,16 +45,7 @@ export class TodoController {
         const status: TodoStatusEnum = params.status;
         return this.todoService.getCountByStatus(status);  
     }
-
-    @Get('/:param1/:status')
-    getTodoBy(
-        @Param() params
-    ){
-        const param1 = params.param1;
-        const status: TodoStatusEnum = params.status;
-        return this.todoService.getTodoBy(param1, status);
-    }
-
+        
     @Post('/')
     addTodo(
         @Body() newTodo: AddTodoDto
