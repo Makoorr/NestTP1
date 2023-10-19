@@ -20,9 +20,9 @@ export class TodoService {
     async getTodoById(id: number): Promise<TodoEntity> {
         const todo = await this.todoRepository.findOne({where: {id: id}});
         console.log(id);
-        if (todo)
-            return todo;
-        throw new NotFoundException(`Le todo d'id ${id} n'existe pas`);
+        if (!todo)
+            throw new NotFoundException(`Le todo d'id ${id} n'existe pas`);
+        return todo;
     }
 
     async getCountByStatus(stat: TodoStatusEnum): Promise<number>{
@@ -40,8 +40,18 @@ export class TodoService {
         return this.todoRepository.save(newTodo);
     }
 
-    updateTodo(todo: UpdateTodoDto) {
-        return this.todoRepository.save(todo);
+    async updateTodo( id: number, sentTodo: Partial<UpdateTodoDto> ) {
+        let oldTodo = await this.getTodoById(id);
+        if (!oldTodo)
+            throw new NotFoundException('Todo pas trouvé!');
+
+        const newTodo: UpdateTodoDto = {
+            name: sentTodo.name || oldTodo.name,
+            description: sentTodo.description || oldTodo.description,
+            status: sentTodo.status || oldTodo.status
+        }
+        await this.todoRepository.update(id,newTodo)
+        return newTodo;
     }
 
     deleteTodoById(id: number) {
