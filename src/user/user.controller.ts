@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
 import { UserService } from './user.service';
 import { AddUserDto } from './dto/adduser.dto';
 import { UpdateUserDto } from './dto/updateuser.dto';
+import { LoginUserDto } from './dto/loginuser.dto';
 
 @Controller('user')
 export class UserController {
@@ -33,6 +34,13 @@ export class UserController {
         @Body() body: AddUserDto
     ) {
         return this.userService.addUser(body);
+    }
+    
+    @Post('/login')
+    login(
+        @Body() creds: LoginUserDto
+    ) {
+        return this.userService.login(creds);
     }
 
     @Put('/:id')

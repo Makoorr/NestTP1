@@ -5,6 +5,8 @@ import { UserEntity } from './entities/user.entity';
 import { AddUserDto } from './dto/adduser.dto';
 import { UpdateUserDto } from './dto/updateuser.dto';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import { LoginUserDto } from './dto/loginuser.dto';
 
 @Injectable()
 export class UserService {
@@ -41,6 +43,40 @@ export class UserService {
                 username: result.username,
                 role: result.role,
                 createdAt: result.createdAt
+            }
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+
+    async login(user: LoginUserDto) {
+        const userExist = await this.getUserbyUsername(user.username);
+        if (!user || !userExist)
+            throw new NotFoundException('Une erreur est survenue!');
+
+        try {
+            const match = await bcrypt.compare(user.password, userExist.password);
+            if (match) {
+                // Generate token payload
+                const payload = {
+                    id: userExist.id,
+                    username: user.username,
+                };
+
+                const secret = process.env.JWT_SECRET || 'secret'
+                
+                // 2. generate token
+                const token = jwt.sign(payload, secret, {
+                    // expriation
+                    expiresIn: '10h'
+                })
+
+                // 3. send token
+                return {
+                    "token": token,
+                }
+            } else {
+                throw new NotFoundException('Une erreur est survenue!');
             }
         } catch (e) {
             throw new Error(e);
