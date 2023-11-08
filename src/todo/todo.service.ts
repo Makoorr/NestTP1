@@ -1,24 +1,42 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodoEntity } from './entities/todo.entity/todo.entity';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { AddTodoDto } from './dto/addtodo.dto';
 import { UpdateTodoDto } from './dto/updatetodo.dto';
 import { TodoStatusEnum } from 'src/enums/todo-status.enum';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class TodoService {
     constructor(
+        @Inject(UserService)
+        private userService: UserService,
         @InjectRepository(TodoEntity)
         private readonly todoRepository: Repository<TodoEntity>,
     ) {}
 
     async getTodos(take?: number, skip?: number) {
         if (!take || !skip)
-            return this.todoRepository.find();
+        {
+            const todos: TodoEntity[] = await this.todoRepository
+                .createQueryBuilder("todo")
+                .leftJoin('todo.user', 'user')
+                .addSelect([
+                    'user.id',
+                    'user.username'
+                ])
+                .getMany();
+            return todos;
+        }    
         
         const todos: TodoEntity[] = await this.todoRepository
             .createQueryBuilder("todo")
+            .leftJoinAndSelect('todo.user', 'user')
+            .select([
+                'user.id',
+                'user.username'
+            ])
             .take(take)
             .skip(skip)
             .getMany();
@@ -27,7 +45,10 @@ export class TodoService {
     }
 
     async getTodoById(id: number): Promise<TodoEntity> {
-        const todo = await this.todoRepository.findOne({where: {id: id}});
+        const todo = await this.todoRepository.findOne({
+            where: {id: id},
+            relations: ['user']
+        });
         if (!todo)
             throw new NotFoundException(`Le todo d'id ${id} n'existe pas`);
         return todo;
@@ -47,23 +68,45 @@ export class TodoService {
         return await this.todoRepository.count({where: {status: stat}});
     }
 
-    addTodo(todo: AddTodoDto): Promise<TodoEntity> {
-        const {name, description} = todo;
+    async addTodo(todo: AddTodoDto): Promise<TodoEntity> {
+        const {name, description, userId} = todo;
 
+        // look for users by userId
+        const user = await this.userService.getUserbyId(userId);
+        if(!user)
+            throw new UnauthorizedException('Non autorisé.')
+        
         const newTodo = {
             name,
             description,
+            user,
         };
 
-        return this.todoRepository.save(newTodo);
+        try {
+            const result = await this.todoRepository.save(newTodo);
+            return result;
+        } catch (e) {
+            throw new Error(e);
+        }
     }
 
-    async updateTodo( id: number, sentTodo: Partial<UpdateTodoDto> ) {
+    async updateTodo(id: number, sentTodo: Partial<UpdateTodoDto>) {
         let oldTodo = await this.getTodoById(id);
         if (!oldTodo)
             throw new NotFoundException('Todo pas trouvé!');
 
-        const newTodo: UpdateTodoDto = {
+        // look for users by userId
+        const user = await this.userService.getUserbyId(sentTodo?.userId);
+        if(!user)
+            throw new UnauthorizedException('User Non autorisé.')
+        
+        console.log(user);
+        console.log(oldTodo);
+
+        if(user.id !== oldTodo.user?.id)
+            throw new UnauthorizedException('Non autorisée.')
+
+        const newTodo = {
             name: sentTodo.name || oldTodo.name,
             description: sentTodo.description || oldTodo.description,
             status: sentTodo.status || oldTodo.status

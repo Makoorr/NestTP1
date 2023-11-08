@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 export class AddTodoDto {
     @IsString()
@@ -15,4 +16,6 @@ export class AddTodoDto {
         message: 'Description trop courte.'
     })
     description: string;
+
+    userId: number;
 }

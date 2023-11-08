@@ -5,7 +5,7 @@ import { CommonModule } from './common/common.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TodoModule } from './todo/todo.module';
 import * as dotenv from 'dotenv';
-import { AuthMiddleware } from './auth/auth.middleware';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 import { UserModule } from './user/user.module';
 
 dotenv.config();

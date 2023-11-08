@@ -1,5 +1,6 @@
 import { UserRoleEnum } from 'src/enums/user-role.enum'
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, VersionColumn } from 'typeorm'
+import { TodoEntity } from 'src/todo/entities/todo.entity/todo.entity'
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, VersionColumn, OneToMany } from 'typeorm'
 
 @Entity('user')
 export class UserEntity {
@@ -18,6 +19,9 @@ export class UserEntity {
         default: UserRoleEnum.USER,
     })
     role: string
+
+    @OneToMany(() => TodoEntity, (todo) => todo.id)
+    todo: TodoEntity[]
 
     @CreateDateColumn({
         update: false,

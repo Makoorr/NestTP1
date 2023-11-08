@@ -1,5 +1,6 @@
 import { TodoStatusEnum } from 'src/enums/todo-status.enum';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from 'typeorm';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from 'typeorm';
 
 @Entity('todo')
 export class TodoEntity {
@@ -18,6 +19,9 @@ export class TodoEntity {
         default: TodoStatusEnum.PENDING,
     })
     status: string;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    user: UserEntity
 
     @CreateDateColumn({
         update: false,

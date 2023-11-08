@@ -19,8 +19,10 @@ export class AuthMiddleware implements NestMiddleware {
           const secret = process.env.JWT_SECRET || 'secret'
           const payload = jwt.verify(token, secret)
 
-          // 3. Si valide : on continue + set req.user
-          req.user = payload
+          // 3. On envoie le payload dans le body
+          // @ts-ignore
+          req.body.userId = payload.id;
+
           next()
       } catch (e) {
           return res.status(401).send('Unauthorized')
