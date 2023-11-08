@@ -35,7 +35,8 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer.apply(AuthMiddleware).forRoutes(
       {path: 'todo', method: RequestMethod.GET},
-      {path: 'todo*', method: RequestMethod.DELETE},
+      {path: 'todo*', method: RequestMethod.POST},
+      {path: 'todo*', method: RequestMethod.PUT},
     );
   }
 
