@@ -15,5 +15,6 @@ import { SkillEntity } from './entities/skill.entity';
   ],
   controllers: [CvController],
   providers: [CvService],
+  exports: [CvService],
 })
 export class CvModule {}
