@@ -4,11 +4,12 @@ import { CvController } from './cv.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CvEntity } from './entities/cv.entity';
 import { UserModule } from 'src/user/user.module';
+import { SkillEntity } from './entities/skill.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [CvEntity]
+      [CvEntity, SkillEntity]
     ),
     UserModule
   ],

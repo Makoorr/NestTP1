@@ -39,6 +39,7 @@ export class AppModule implements NestModule {
       {path: 'todo', method: RequestMethod.GET},
       {path: 'todo*', method: RequestMethod.POST},
       {path: 'todo*', method: RequestMethod.PUT},
+      'cv*'
     );
   }
 

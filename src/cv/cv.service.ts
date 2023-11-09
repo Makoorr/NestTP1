@@ -15,15 +15,30 @@ export class CvService {
     private readonly cvRepository: Repository<CvEntity>
   ){}
 
-  async findAll() {
-    const cvs = await this.cvRepository
+  async findAll(userId: number) {
+    let cvs;
+    
+    // look for users by userId
+    const user = await this.userService.getUserbyId(userId);
+    if(!user)
+        throw new UnauthorizedException('User Non autorisé.')
+
+    cvs = await this.cvRepository
       .createQueryBuilder("cv")
+      .where("user.id = :userId", { userId })
+      .leftJoin("cv.user", "user")
+      .addSelect([
+        "user.id",
+        "user.username",
+      ])
+      .getMany();
     return cvs;
   }
 
   async findOne(id: number) {
     const cv = await this.cvRepository.findOne({
-      where: {id: id}
+      where: {id: id},
+      relations: ['user', 'skill'],
     });
 
     if(!cv) {
@@ -65,7 +80,14 @@ export class CvService {
     }
 
     try {
-      const result = await this.cvRepository.save(newCv);
+      await this.cvRepository.save(newCv);
+      const result = {
+        createCv,
+        user: {
+          id: userId,
+          username: user.username
+        }
+      }
       return result;
     } catch (e) {
         throw new Error(e);
@@ -98,7 +120,25 @@ export class CvService {
     return newCv;
   }
 
-  remove(id: number) {
-    return this.cvRepository.delete(id);
+  async remove(data: {cvId: number, userId: number}) {
+    // look for cv by cvId
+    let oldCv = await this.findOne(data.cvId);
+    if (!oldCv)
+        throw new NotFoundException('Cv non trouvé!');
+
+    // look for users by userId
+    try {
+      const user = await this.userService.getUserbyId(data.userId);
+      if(!user)
+        throw new UnauthorizedException('Non autorisé.')
+      
+      if(user.id !== oldCv.user.id){
+        throw new UnauthorizedException('Non autorisé.')
+      }
+    } catch (e) {
+      throw new UnauthorizedException('Non autorisé.')
+    }
+
+    return this.cvRepository.delete(data.cvId);
   }
 }

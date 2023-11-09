@@ -13,13 +13,10 @@ export class CvController {
   }
 
   @Get()
-  findAll() {
-    return this.cvService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cvService.findOne(+id);
+  findAll(
+    @Body() body: {userId: number}
+  ) {
+    return this.cvService.findAll(body.userId);
   }
 
   @Put(':id')
@@ -28,7 +25,14 @@ export class CvController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cvService.remove(+id);
+  remove(
+    @Param('id') id: string,
+    @Body() body: {userId: number}
+    ) {
+    const data = {
+      cvId: +id,
+      userId: body.userId
+    }
+    return this.cvService.remove(data);
   }
 }

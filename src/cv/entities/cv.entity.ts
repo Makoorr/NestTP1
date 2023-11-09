@@ -2,7 +2,7 @@ import { UserEntity } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from "typeorm";
 import { SkillEntity } from "./skill.entity";
 
-@Entity('user')
+@Entity('cv')
 export class CvEntity {
     @PrimaryGeneratedColumn()
     id: number

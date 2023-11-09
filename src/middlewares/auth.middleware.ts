@@ -9,6 +9,7 @@ export class AuthMiddleware implements NestMiddleware {
       const request = req.headers['auth-user']
 
       if ( (!request) || (request.split(' ').length !== 2) || (request.split(' ')[0] !== 'Bearer')){
+        console.log("Caught in Middleware Unauthorized 1: ",request)
         return res.status(401).send('Unauthorized')
       }
       
@@ -25,6 +26,7 @@ export class AuthMiddleware implements NestMiddleware {
 
           next()
       } catch (e) {
+          console.log("Caught in Middleware Unauthorized 2")
           return res.status(401).send('Unauthorized')
       }
   }
