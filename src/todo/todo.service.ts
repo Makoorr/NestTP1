@@ -99,9 +99,6 @@ export class TodoService {
         const user = await this.userService.getUserbyId(sentTodo?.userId);
         if(!user)
             throw new UnauthorizedException('User Non autorisé.')
-        
-        console.log(user);
-        console.log(oldTodo);
 
         if(user.id !== oldTodo.user?.id)
             throw new UnauthorizedException('Non autorisée.')

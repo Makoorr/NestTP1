@@ -1,3 +1,4 @@
+import { CvEntity } from 'src/cv/entities/cv.entity'
 import { UserRoleEnum } from 'src/enums/user-role.enum'
 import { TodoEntity } from 'src/todo/entities/todo.entity/todo.entity'
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, VersionColumn, OneToMany } from 'typeorm'
@@ -22,6 +23,9 @@ export class UserEntity {
 
     @OneToMany(() => TodoEntity, (todo) => todo.id)
     todo: TodoEntity[]
+
+    @OneToMany(() => CvEntity, (cv) => cv.id)
+    cv: CvEntity[]
 
     @CreateDateColumn({
         update: false,

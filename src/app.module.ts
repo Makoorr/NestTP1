@@ -7,6 +7,7 @@ import { TodoModule } from './todo/todo.module';
 import * as dotenv from 'dotenv';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { UserModule } from './user/user.module';
+import { CvModule } from './cv/cv.module';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ dotenv.config();
     }),
     TodoModule,
     UserModule,
+    CvModule,
   ],
   controllers: [AppController],
   providers: [AppService],
